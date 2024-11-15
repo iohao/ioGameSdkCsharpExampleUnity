@@ -32,7 +32,7 @@ Advantages of SDK Code Generation
 
 ### Start the ioGame game server
 
-see https://github.com/iohao/ioGameExamples/SdkExample
+see https://github.com/iohao/ioGameExamples/tree/main/SdkExample
 
 
 

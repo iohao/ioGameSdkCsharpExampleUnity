@@ -35,7 +35,7 @@
 
 ### 启动游戏服务器
 
-see https://github.com/iohao/ioGameExamples/SdkExample
+see https://github.com/iohao/ioGameExamples/tree/main/SdkExample
 
 
 
