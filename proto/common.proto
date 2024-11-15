@@ -1,0 +1,26 @@
+// generate 2024-11-02 20:25:16
+// https://github.com/iohao/ioGame
+
+syntax = "proto3";
+package pb.common;
+
+// Bullet
+message BulletMessage {
+  // id
+  int32 bullet_id = 1;
+}
+
+// LoginVerify
+message LoginVerifyMessage {
+  // jwt
+  string jwt = 1;
+}
+
+// User
+message UserMessage {
+  // userId
+  int64 user_id = 1;
+  // nickname
+  string name = 2;
+}
+
