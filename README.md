@@ -34,6 +34,9 @@ Advantages of SDK Code Generation
 
 see https://github.com/iohao/ioGameExamples/tree/main/SdkExample
 
+> Run SdkApplication.java
+
+![](./doc/server.png)
 
 
 ### Start Unity

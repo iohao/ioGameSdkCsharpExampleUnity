@@ -37,6 +37,9 @@
 
 see https://github.com/iohao/ioGameExamples/tree/main/SdkExample
 
+> 运行 SdkApplication.java 启动游戏服务器
+
+![](./doc/server.png)
 
 
 ### 启动 Unity
