@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.psygames.unitywebsocket": "https://github.com/psygames/UnityWebSocket.git#upm",
     "com.unity.ai.navigation": "2.0.4",
     "com.unity.collab-proxy": "2.5.2",
     "com.unity.feature.2d": "2.0.1",

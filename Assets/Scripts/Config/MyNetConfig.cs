@@ -1,10 +1,11 @@
+using System;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using IoGame.Gen;
 using IoGame.Sdk;
 using Pb.Common;
 using UnityEngine;
-using NativeWebSocket;
+using UnityWebSocket;
 
 namespace Config
 {
@@ -36,7 +37,7 @@ namespace Config
         public static void Poll()
         {
             // Receiving server messages
-            _socket.Poll();
+            // _socket.Poll();
         }
 
         private static void SocketInit()
@@ -47,8 +48,10 @@ namespace Config
             _socket = new IoGameUnityWebSocket();
             IoGameSetting.NetChannel = _socket;
 
-            _socket.OnOpen += () =>
+            _socket.OnOpen += (_, _) =>
             {
+                Debug.Log("WebSocket OnOpen new!");
+
                 // login
                 var loginVerifyMessage = new LoginVerifyMessage { Jwt = "1234567" };
                 SdkAction.OfLoginVerify(loginVerifyMessage, result =>
@@ -64,19 +67,13 @@ namespace Config
 
         private static async void IdleTimer()
         {
-            /*
-             * This may be a bug in WebSocket. The message cannot be empty.
-             *
-             * cn: 似乎该 unity WebSocket 库不支持发送空数组；这里用 cmdMerge 占位，以便让心跳可以顺利发送到服务器。
-             */
-            var heartbeatMessage = new ExternalMessage { CmdCode = 0, CmdMerge = 1 }.ToByteArray();
-
+            var heartbeatMessage = new ExternalMessage().ToByteArray();
             var counter = 0;
 
             while (true)
             {
                 await Task.Delay(8000);
-                Debug.Log($"-------- unity...HeartbeatMessage {counter++}");
+                Debug.Log($"-------- unity new ...HeartbeatMessage {counter++}");
                 // Send heartbeat to server. 发送心跳给服务器
                 IoGameSetting.NetChannel.WriteAndFlush(heartbeatMessage);
             }
@@ -109,36 +106,32 @@ namespace Config
     public sealed class IoGameUnityWebSocket : SimpleNetChannel
     {
         public string Url { set; get; }
-        private WebSocket _socket;
-        public event WebSocketOpenEventHandler OnOpen = () => { Debug.Log("WebSocket OnOpen"); };
-        public event WebSocketErrorEventHandler OnError = e => { Debug.LogError($"e {e}"); };
-        public event WebSocketCloseEventHandler OnClose = e => { Debug.Log($"Connection closed! {e}"); };
-        public event WebSocketMessageEventHandler OnMessage;
+
+        WebSocket _socket;
+
+        public event EventHandler<OpenEventArgs> OnOpen = (_, _) => { Debug.Log("WebSocket OnOpen"); };
 
         public override void Prepare()
         {
             Url ??= IoGameSetting.Url;
             _socket = new WebSocket(Url);
-
+            // 注册回调
             _socket.OnOpen += OnOpen;
-            _socket.OnError += OnError;
-            _socket.OnClose += OnClose;
-            _socket.OnMessage += OnMessage ?? (packet => { AcceptMessage(ExternalMessage.Parser.ParseFrom(packet)); });
+            _socket.OnClose += (_, e) => { Debug.Log($"Connection closed! {e}"); };
+            _socket.OnError += (_, e) => { Debug.LogError($"e {e}"); };
+            _socket.OnMessage += (m, e) =>
+            {
+                var packet = e.RawData;
+                AcceptMessage(ExternalMessage.Parser.ParseFrom(packet));
+            };
 
-            _socket.Connect().GetAwaiter().OnCompleted(() => { });
+            // 连接
+            _socket.ConnectAsync();
         }
 
         public override void WriteAndFlush(byte[] bytes)
         {
-            if (_socket.State == WebSocketState.Open)
-                _socket.Send(bytes);
-        }
-
-        public void Poll()
-        {
-#if !UNITY_WEBGL || UNITY_EDITOR
-            _socket.DispatchMessageQueue();
-#endif
+            _socket.SendAsync(bytes);
         }
     }
 }

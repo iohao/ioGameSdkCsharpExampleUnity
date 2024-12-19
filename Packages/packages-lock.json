@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.psygames.unitywebsocket": {
+      "version": "https://github.com/psygames/UnityWebSocket.git#upm",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "0576fdc02f65c481a1f1d8833a15186d7357e05d"
+    },
     "com.unity.2d.animation": {
       "version": "10.1.3",
       "depth": 1,
